@@ -2,7 +2,7 @@
 Program functions as a shell program similar to 'bash' or 'zsh'. Listed below is a README explaining how I performed each of the listed actions.
 
 
-OVERALL STRUCTURE OF THE CODE
+### OVERALL STRUCTURE OF THE CODE
 My code starts off in the main function. It parses the paths in the $PATH variable, and puts them in an array.
 This way the code can easily search for external programs we try to execute. It also attaches two signal handlers
 to the SIGTSTP and SIGINT signals; this is to provide alternative behavior to a user pressing Ctrl-Z or Ctrl-C; now, when either is pressed my code has special handling of the stopping or interrupting of the running process. Had
@@ -23,8 +23,7 @@ a 'sh' function followed by a file, the main function calls on the 'process_sh' 
 
 Commands are parsed using the strtok function.
 
-PROCESS_FUNCTION
-
+### PROCESS_FUNCTION
 This function is the meat and potatoes of the shell. It is here where the shell clones off to another process to
 handle the user's inputted command.
 
@@ -57,7 +56,7 @@ would completly replace the cloned process image, leaving no room for clean up.
 After a cloned process finished, assuming the parent waits for it it will collect its return code, and return to
 the main loop, awaiting the next command.
 
-JOB STRUCTURES
+### JOB STRUCTURES
 In my code I created a struct to house job information. It looks like this:
 struct job {
   int job_id; // job's id (1, 2, 3)
@@ -79,7 +78,7 @@ can get to look at 'n' jobs. A hash table was an idea of mine, as it would be ea
 calling 'kill', however it would be quite annoying to list through the jobs. I could have used two data structure,
 but I decided not to, for fear of over complicating things.
 
-VARIABLE STRUCT
+### VARIABLE STRUCT
 I also create a struct to house tish variables, including environment variables. It looks like this:
 struct variable { // a simple way to keep track of the environment variables in BASH
   char *name;
@@ -93,12 +92,12 @@ in a hash table, for easy O(1) lookup and since we arent ever listing out variab
 change that. However, O(n) lookup of the linked list isnt too bad, plus it is easier to work with since I created the data structure
 itself.
 
-SPECIFIC COMMANDS
+## SPECIFIC COMMANDS
 
-PWD
+### PWD
 This command simply calls the getcwd(3) function. Fast an easy, just prints out what that function returns.
 
-CD
+### CD
 Cd naturally uses the chdir(2) command. For this command, I specially added the CLONE_FS flag to clone(2) func.
 This way a cloned process can move the parent processes cwd as well.
 
@@ -106,7 +105,7 @@ Other flags I used for the clone process include CLONE_VM(so clones can modify j
 CLONE_IO(to ensure the clone/parent share same io to user), CLONE_FILES(except when duping, as dupes should only
 dupe cloned fds so we done affect parent).
 
-JOBS
+### JOBS
 Jobs is super simple. It just lists through all of the jobs in our job list. It should be noted that I typically
 add jobs to the job list even if they are running in the fg; this is to ensure I can find the job to kill should
 the user type Ctrl-Z or Ctrl-C.
@@ -118,7 +117,7 @@ running process.
 
 Whenever a process is signaled, its status string listed in jobs is updated appropriately.
 
-FG & BG
+### FG & BG
 Relatively simply. It should be noted fg, bg, and kill arent run in cloned processes. I could not get them to
 work in those clone processes, mainly because kill/bg/fg's parent would become the child process,
 and I need the parent to be tish main.
@@ -129,7 +128,7 @@ After sending it, fg will wait for the process to finish, bg wont and will ask t
 Waiting for processes is again done with waitpid(2), using WNOHANG if not waiting, __WALL | WUNTRACED in both
 cases. __WALL waits for clones and forks. I suppoes __WCLONE wold work too, however.
 
-KILL
+### KILL
 Kill command works quite simply. Let it be known that the HW doc mentioned the kill command should have been given the
 JOB ID, not the PROCESS ID. The Linux kill command accepts the process ID, but following the HW doc my code accepts
 the job_id listed in 'jobs'
@@ -137,7 +136,7 @@ the job_id listed in 'jobs'
 The kill command searches for the specific job with that ID, and it sends the signal the user requested to the
 process. It enters a switch statement to see which SIGNAL was requested, and sets the job status as necessary.
 
-REDIRECTION
+### REDIRECTION
 Redirection works by using dup/dup2. For example, with '>' operator, the code follows something like this:
 
 open(fd, filename...) // opens requested file at fd 'fd'
@@ -152,7 +151,7 @@ I used dup/dup2 since the HW doc mentioned it, and I found this process of the d
 
 Redirection to stdin follows a similar process, except for stdin not stdout.
 
-ECHO
+### ECHO
 Echo is quite simple. It just prints back what the user gave 'echo' as args.
 
 As for the special 'echo $?' command, I stored the previous return of each process in a global variable named
@@ -166,7 +165,7 @@ This is how i was able to know when to stop looking for args. I realize now how 
 
 Return vals were extracted using the wstatus param of waitpid(). Using WEXITSTATUS()
 
-VARIABLES
+### VARIABLES
 As noted before, I store variables in a linked list of variable structs.
 
 I utilize the third param of main() to extract environment variables upon start of the program, and store them
@@ -179,7 +178,7 @@ The left of the sign becomes the 'name', the right becomes the 'value'.
 echo $VAR works by recognizing the arg starts with $, and finding the var with name VAR by searching the linked
 list.
 
-NON INTERACTIVE SUPPORT
+### NON INTERACTIVE SUPPORT
 Non interactive support is implemented, and is how I test the program in the test scripts. It is done fairly
 simply;
 - if the sh command is called, it opens the file given and parses it line by line, executing each line of the
@@ -188,15 +187,12 @@ file one by one. It does ignore comments
 - if tish is given a parameter of a filename, it runs the 'sh' function straight away and parses the file,
 running each command one by one as in sh. It does NOT enter an infinite loop in this case
 
-Unfortunately, I was unable to figure out executable files with non-interactive support. I unfortunately ran out
-of time :(.
-
-DEBUGGING
+### DEBUGGING
 If the debugging flag (-d) is given, tish prints out RUNNING/ENDED when a command starts/finishes. It does this
 by storing the 'debug_flag' in another global variable, so every function has access and can see if they should
 print debug info easily.
 
-RUNNING THE CODE
+### RUNNING THE CODE
 'make tish' will generate an executable named 'tish'
 - It can be run using ./tish
 'make tests' will make all of my test shell scripts and automatically run them
