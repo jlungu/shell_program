@@ -1,5 +1,5 @@
 ## Custom Shell Program
-Program functions as a shell program similar to 'bash' or 'zsh'. Listed below is a README explaining how I performed each of the listed actions.
+Program functions as a shell program similar to 'bash' or 'zsh'. Listed below is a README explaining how I performed each of the listed actions. Written entirely is C! 
 
 
 ### OVERALL STRUCTURE OF THE CODE
