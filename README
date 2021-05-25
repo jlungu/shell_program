@@ -1,7 +1,6 @@
-James Lungu
-ID 111628049
-NetId jlungu
-README
+## Custom Shell Program
+Program functions as a shell program similar to 'bash' or 'zsh'. Listed below is a README explaining how I performed each of the listed actions.
+
 
 OVERALL STRUCTURE OF THE CODE
 My code starts off in the main function. It parses the paths in the $PATH variable, and puts them in an array.
@@ -197,14 +196,6 @@ If the debugging flag (-d) is given, tish prints out RUNNING/ENDED when a comman
 by storing the 'debug_flag' in another global variable, so every function has access and can see if they should
 print debug info easily.
 
-TEST SCRIPTS
-Quite standard. Use non-interactive support to run commands, and uses redirection to see their output. I created
-about ~12 commands. Not too many, and I apologize for not making more, but I hope I covered most of the bases.
-Again, I am unfortunately running out of time, so I am very sorry!! :(
-
-Test scripts use grep for viewing if jobs/commands are executing appropriately. I found it quite useful to check
-status of the commands I run.
-
 RUNNING THE CODE
 'make tish' will generate an executable named 'tish'
 - It can be run using ./tish
@@ -212,8 +203,3 @@ RUNNING THE CODE
 'make clean' will remove the tish exectables and *.o files.
 
 Thanks for reading!
-
-I spent a lot of time on signal handling, as it wasnt quite working for quite a few days. I lost a bunch of time doing this, and unfortunately am now out of time. If I had to do this assignment again, I would better
-plan my days working on it and better manage the time I have, so something like getting stuck on signals wouldnt
-happen again. Or at least, If i were to get stuck on something I would work on another portion sooner, and ask
-more questions.
